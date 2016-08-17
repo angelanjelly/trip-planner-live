@@ -135,10 +135,50 @@
     return string;
   };
 
-  $('.list-group .remove').on('click', function(e){
+  $('.list-group').on('click','button', function(e){
     $(this).parent().remove();
   });
 
+  var defaultClone = $('#itinerary').children().clone(true);
+  var daysList = [];
+
+   var makeDay = function(){
+           //make a clone
+        return $(defaultClone).clone(true);
+   };
+
+   daysList[0] = makeDay();
+   daysList[1] = $('#itinerary').children();
+   daysList[2] = makeDay();
+
+
+  $('.day-buttons').on('click', 'button', function(){
+    var days = $('#itinerary').children();
+    //plus button
+    if ($(this).attr('id') === 'day-add') {
+      //hide current panel
+      days.detach();
+      var newDay = makeDay();
+      daysList.push(newDay);
+
+      var newDayNum = daysList.length;
+      $('#day-title span').replaceWith('<span>Day '+newDayNum+'</span>');
+      $('#itinerary').append(newDay);
+      $('<button class="btn btn-circle day-btn">'+newDayNum+'</button>').insertBefore($(this));
+      //create new day button with next num
+      //give current-day class
+      $('.day-btn').removeClass('current-day');
+      $('.day-btn').last().addClass('current-day');
+      //day number buttons
+    } else {
+      $('.day-btn').removeClass('current-day');
+      $(this).addClass('current-day');
+      var dayIndex = +$(this).text() - 1;
+      days.detach();
+      $('#itinerary').append(daysList[dayIndex]);
+
+    }
+  });
 
   {% endautoescape %}
 </script>
