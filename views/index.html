@@ -97,32 +97,66 @@
 <script src="/js/main.js"></script>
 
 <script>
+  var drawMarker2;
+  var centerMap;
+  var setCenter;
   {% autoescape false %}
   var hotels = {{ hotels | json }};
   var restaurants = {{ restaurants | json }};
   var activities = {{ activities | json }};
 
+
   hotels.forEach(function(hotel){
-    $('#hotel-choices').append('<option>' + hotel.name + '</option>');
+    $('#hotel-choices').append('<option data-loc=' + hotel.place.location + '>' + hotel.name + '</option>');
   });
 
   restaurants.forEach(function(restaurant){
-    $('#restaurant-choices').append('<option>' + restaurant.name + '</option>');
+    $('#restaurant-choices').append('<option data-loc=' + restaurant.place.location + '>' + restaurant.name + '</option>');
   });
 
   activities.forEach(function(activity){
-    $('#activity-choices').append('<option>' + activity.name + '</option>');
+    $('#activity-choices').append('<option data-loc=' + activity.place.location + '>' + activity.name + '</option>');
   });
 
+
+  var markers = [];
+
+  var googleMapHtml;
   $('.pull-right').on('click', function(e){
-    var select = $(this).prev('select')
+    var select = $(this).prev('select');
+    console.log(select);
     var getId = select.attr('id');
     var newNode = makeString(select.val());
     var listGroup;
+    //getData.place.location
+        // var getData = $(select).data('loc').split(', ');
+    // getData[0] = +getData[0];
+    // getData[1] = +getData[1];
 
-    if(getId === 'hotel-choices') listGroup = $('.list-group')[0];
-    else if (getId === 'restaurant-choices') listGroup = $('.list-group')[1];
-    else if (getId === 'activity-choices') listGroup = $('.list-group')[2];
+    if(getId === 'hotel-choices') {
+      listGroup = $('.list-group')[0];
+      var getData = $.grep(hotels, function(h) {return h.name == select.val()});
+      getData = getData[0].place.location;
+      markers.push(drawMarker2('hotel', getData));
+      setCenter(markers);
+      // centerMap.center = googleMapHtml(getData[0], getData[1]);
+      // centerMap.center.lat(getData[0]);
+      // centerMap.center.lng(getData[1]);
+    }
+    else if (getId === 'restaurant-choices') {
+      listGroup = $('.list-group')[1];
+      var getData = $.grep(restaurants, function(h) {return h.name == select.val()});
+      getData = getData[0].place.location;
+      markers.push(drawMarker2('restaurant', getData));
+      setCenter(markers);
+    }
+    else if (getId === 'activity-choices') {
+      listGroup = $('.list-group')[2];
+      var getData = $.grep(activities, function(h) {return h.name == select.val()});
+      getData = getData[0].place.location;
+      markers.push(drawMarker2('activity', getData));
+      setCenter(markers);
+    }
 
     $(listGroup).append($(newNode));
   });
