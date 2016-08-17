@@ -89,4 +89,58 @@
     </div>
   </div>
 </div>
+
+
+<script src="/jquery/jquery.min.js"></script>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACLq0yeXKTq80ihRrEoUUz3yHTEEm0kfw"></script>
+<script src="/js/main.js"></script>
+
+<script>
+  {% autoescape false %}
+  var hotels = {{ hotels | json }};
+  var restaurants = {{ restaurants | json }};
+  var activities = {{ activities | json }};
+
+  hotels.forEach(function(hotel){
+    $('#hotel-choices').append('<option>' + hotel.name + '</option>');
+  });
+
+  restaurants.forEach(function(restaurant){
+    $('#restaurant-choices').append('<option>' + restaurant.name + '</option>');
+  });
+
+  activities.forEach(function(activity){
+    $('#activity-choices').append('<option>' + activity.name + '</option>');
+  });
+
+  $('.pull-right').on('click', function(e){
+    var select = $(this).prev('select')
+    var getId = select.attr('id');
+    var newNode = makeString(select.val());
+    var listGroup;
+
+    if(getId === 'hotel-choices') listGroup = $('.list-group')[0];
+    else if (getId === 'restaurant-choices') listGroup = $('.list-group')[1];
+    else if (getId === 'activity-choices') listGroup = $('.list-group')[2];
+
+    $(listGroup).append($(newNode));
+  });
+
+  var makeString = function(val){
+    var string = '<div class="itinerary-item">' +
+                '<span class="title">' + val + '</span>' +
+                '<button class="btn btn-xs btn-danger remove btn-circle">x</button>'
+                +'</div>';
+    return string;
+  };
+
+  $('.list-group .remove').on('click', function(e){
+    $(this).parent().remove();
+  });
+
+
+  {% endautoescape %}
+</script>
+
 {% endblock %}
